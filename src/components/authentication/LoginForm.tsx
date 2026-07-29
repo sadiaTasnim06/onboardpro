@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { loginSchema, type LoginFormData } from "@/schemas/loginSchema";
-import { login } from "@/services/auth.service";
+import { useLogin } from "@/hooks/useLogin";
 
 function LoginForm() {
   const {
@@ -25,17 +25,9 @@ function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { mutate: login, isPending } = useLogin();
   const onSubmit = async (data: LoginFormData) => {
-    try {
-      setIsLoading(true);
-
-      await login(data);
-
-      console.log("Success");
-    } finally {
-      setIsLoading(false);
-    }
+    login(data);
   };
   return (
     <Box
@@ -56,7 +48,7 @@ function LoginForm() {
           placeholder="Email"
           type="email"
           {...register("email")}
-          disabled={isLoading}
+          disabled={isPending}
         />
         {errors.email && (
           <Text color="red.500" fontSize="sm">
@@ -76,7 +68,7 @@ function LoginForm() {
             placeholder="Password"
             type={showPassword ? "text" : "password"}
             {...register("password")}
-            disabled={isLoading}
+            disabled={isPending}
           />
         </InputGroup>
         {errors.password && (
@@ -89,7 +81,7 @@ function LoginForm() {
           Forgot Password?
         </Link>
 
-        <Button type="submit" loading={isLoading}>
+        <Button type="submit" loading={isPending}>
           Sign In
         </Button>
       </Stack>

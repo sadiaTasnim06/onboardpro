@@ -1,10 +1,9 @@
 import type { LoginFormData } from "@/schemas/loginSchema"
 
+import { api } from "@/lib/api";
+
 export const login = async (data: LoginFormData) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log("Login request", data)
-      resolve(data)
-    }, 1500)
-  })
-}
+  const response = await api.post("/auth/login", data);
+
+  return response.data;
+};
